@@ -4,11 +4,13 @@ SODIUM_EXPORT = \
 	sodium/core.h \
 	sodium/crypto_aead_aes256gcm.h \
 	sodium/crypto_aead_chacha20poly1305.h \
+	sodium/crypto_aead_xchacha20poly1305.h \
 	sodium/crypto_auth.h \
 	sodium/crypto_auth_hmacsha256.h \
 	sodium/crypto_auth_hmacsha512.h \
 	sodium/crypto_auth_hmacsha512256.h \
 	sodium/crypto_box.h \
+	sodium/crypto_box_curve25519xchacha20poly1305.h \
 	sodium/crypto_box_curve25519xsalsa20poly1305.h \
 	sodium/crypto_core_hchacha20.h \
 	sodium/crypto_core_hsalsa20.h \
@@ -28,6 +30,7 @@ SODIUM_EXPORT = \
 	sodium/crypto_scalarmult.h \
 	sodium/crypto_scalarmult_curve25519.h \
 	sodium/crypto_secretbox.h \
+	sodium/crypto_secretbox_xchacha20poly1305.h \
 	sodium/crypto_secretbox_xsalsa20poly1305.h \
 	sodium/crypto_shorthash.h \
 	sodium/crypto_shorthash_siphash24.h \

@@ -36,6 +36,7 @@ AC_SUBST(SODIUM_LIBRARY_VERSION_MINOR)
 AC_SUBST(SODIUM_LIBRARY_VERSION)
 AC_SUBST(DLL_VERSION)
 
+AC_LANG_ASSERT(C)
 LX_CFLAGS=${CFLAGS-NONE}
 
 dnl Path check
@@ -180,19 +181,14 @@ AX_CHECK_COMPILE_FLAG([-fvisibility=hidden],
   [CFLAGS="$CFLAGS -fvisibility=hidden"])
 
 AS_CASE([$host_os], [cygwin*|mingw*|msys|pw32*|cegcc*], [ ], [
-  AX_CHECK_COMPILE_FLAG([-fPIC], [
-    AX_CHECK_LINK_FLAG([-fPIC],
-      [CFLAGS="$CFLAGS -fPIC"]
-    )
-  ])
+  AX_CHECK_COMPILE_FLAG([-fPIC], [CFLAGS="$CFLAGS -fPIC"])
 ])
 
 AS_IF([test "$enable_pie" != "no"],[
   AX_CHECK_COMPILE_FLAG([-fPIE], [
-    AX_CHECK_LINK_FLAG([-fPIE],
-      [AX_CHECK_LINK_FLAG([-pie],
-        [CFLAGS="$CFLAGS -fPIE"
-         LDFLAGS="$LDFLAGS -pie"])
+    AX_CHECK_LINK_FLAG([-pie], [
+      [CFLAGS="$CFLAGS -fPIE"
+       LDFLAGS="$LDFLAGS -pie"]
     ])
   ])
 ])
@@ -288,6 +284,7 @@ AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wredundant-decls], [CWFLAGS="$CWFLAGS -Wredunda
 AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wstrict-prototypes], [CWFLAGS="$CWFLAGS -Wstrict-prototypes"])
 AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wswitch-enum], [CWFLAGS="$CWFLAGS -Wswitch-enum"])
 AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wvariable-decl], [CWFLAGS="$CWFLAGS -Wvariable-decl"])
+AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wno-type-limits], [CWFLAGS="$CWFLAGS -Wno-type-limits"])
 
 AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
@@ -659,6 +656,17 @@ AS_IF([test "x$aligned_access_required" = "xyes"],
   [AC_MSG_RESULT(yes)],
   [AC_MSG_RESULT(no)
    AC_DEFINE([CPU_UNALIGNED_ACCESS], [1], [unaligned memory access is supported])])
+
+AC_MSG_CHECKING(if atomic operations are supported)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[ ]], [[
+static volatile int _sodium_lock;
+__sync_lock_test_and_set(&_sodium_lock, 1);
+__sync_lock_release(&_sodium_lock);
+]]
+)],
+[AC_MSG_RESULT(yes)
+ AC_DEFINE([HAVE_ATOMIC_OPS], [1], [atomic operations are supported])],
+[AC_MSG_RESULT(no)])
 
 dnl Checks for functions and headers
 
